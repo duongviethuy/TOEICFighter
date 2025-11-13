@@ -1,0 +1,50 @@
+/* ======= TabPane tổng thể ======= */
+.custom-tabpane {
+    -fx-background-color: #f8f9fa;        /* màu nền nhẹ */
+    -fx-padding: 10;
+    -fx-border-color: #d0d0d0;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+
+.answer {
+    -fx-padding: 5;
+}
+
+/* ======= Thanh chứa các tab ======= */
+.custom-tabpane .tab-header-area {
+    -fx-background-color: linear-gradient(to right, #ffffff, #f1f1f1);
+    -fx-border-color: #d0d0d0;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* ======= Mỗi tab ======= */
+.custom-tabpane .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 8 16;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+
+/* ======= Tab đang được chọn ======= */
+.custom-tabpane .tab:selected {
+    -fx-background-color: #0078d7;    /* xanh nhấn giống Windows */
+    -fx-text-fill: white;
+    -fx-background-radius: 6 6 0 0;
+}
+
+/* ======= Nội dung trong tab ======= */
+.custom-tabpane .tab-content-area {
+    -fx-background-color: #ffffff;
+    -fx-padding: 20;
+    -fx-border-color: #d0d0d0;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ======= Khi rê chuột vào tab ======= */
+.custom-tabpane .tab:hover {
+    -fx-background-color: #e7f0ff;
+}
