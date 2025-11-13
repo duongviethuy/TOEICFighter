@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.toeicfighter.controllers.loginController">
+   <children>
+      <Pane opacity="0.05" prefHeight="163.0" prefWidth="800.0" style="-fx-background-color: black;" />
+      <Label alignment="CENTER" layoutX="352.0" layoutY="4.0" prefHeight="163.0" prefWidth="446.0" text="TOEIC Question Practice Application" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="119.0" fitWidth="201.0" layoutX="23.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../media/images/logoTOEIC.png" />
+         </image>
+      </ImageView>
+      <Label alignment="CENTER" contentDisplay="CENTER" ellipsisString="" layoutX="134.0" layoutY="167.0" prefHeight="110.0" prefWidth="530.0" text="LOG IN TO ACCESS" textAlignment="CENTER" textFill="RED" textOverrun="WORD_ELLIPSIS">
+         <font>
+            <Font name="System Bold" size="50.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" depthTest="DISABLE" layoutX="530.0" layoutY="563.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="22.0" prefWidth="270.0" text="A project of Viet Huy - February 2026" textAlignment="CENTER">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <HBox layoutX="140.0" layoutY="283.0" prefHeight="58.0" prefWidth="520.0">
+         <children>
+            <Label prefHeight="110.0" prefWidth="182.0" text="Your Username:">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <TextField fx:id="usernameField" prefHeight="76.0" prefWidth="355.0" />
+         </children>
+      </HBox>
+      <HBox layoutX="140.0" layoutY="364.0" prefHeight="58.0" prefWidth="520.0">
+         <children>
+            <Label prefHeight="110.0" prefWidth="182.0" text="Your Password:">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="passwordField" prefHeight="58.0" prefWidth="355.0" />
+         </children>
+      </HBox>
+      <Button fx:id="loginButton" layoutX="454.0" layoutY="454.0" mnemonicParsing="false" onAction="#loginButtonHandle" prefHeight="75.0" prefWidth="206.0" text="LOG IN NOW">
+         <font>
+            <Font name="System Bold" size="21.0" />
+         </font>
+      </Button>
+      <Label fx:id="loginCautionLabel" layoutX="112.0" layoutY="468.0" prefHeight="58.0" prefWidth="270.0" textFill="RED">
+         <font>
+            <Font name="System Italic" size="15.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
