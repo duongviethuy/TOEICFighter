@@ -49,10 +49,52 @@ public class DatabaseManager {
             String password = resultSet.getString("password");
             String fullname = resultSet.getString("fullname");
             String role = resultSet.getString("role");
-            accountsList.add(new Account(accountID, username, password, fullname, role));
+            LocalDateTime createDate = resultSet.getTimestamp("createDate").toLocalDateTime();
+            LocalDateTime lastLogin;
+            try {
+                lastLogin = resultSet.getTimestamp("lastLogin").toLocalDateTime();
+            }
+            catch (Exception e) {
+                lastLogin = null;
+            }
+            accountsList.add(new Account(accountID, username, password, fullname, role, createDate, lastLogin));
         }
 
         return accountsList;
+    }
+
+    public static void changePassword(String username, String newPassword) throws SQLException {
+        String query = "UPDATE account SET password = ? WHERE username = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, newPassword);
+        ps.setString(2, username);
+        ps.executeUpdate();
+    }
+
+    public static void updateLoginStatus(String username) throws SQLException {
+        String  query = "UPDATE account SET lastLogin = ? WHERE username = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+        ps.setString(2, username);
+        ps.executeUpdate();
+    }
+
+    public static void createAccount(Account account) throws SQLException {
+        String query = "INSERT INTO account (username, password, fullname, role, createDate) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, account.getUsername());
+        ps.setString(2, account.getPassword());
+        ps.setString(3, account.getFullname());
+        ps.setString(4, account.getRole());
+        ps.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+        ps.executeUpdate();
+    }
+
+    public static void deleteAccount(String accountID) throws SQLException {
+        String query = "DELETE FROM account WHERE accountID = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, accountID);
+        ps.executeUpdate();
     }
 
     // hàm để lấy tất cả câu hỏi trong database và trả lại 1 ArrayList
@@ -182,13 +224,7 @@ public class DatabaseManager {
         ps.executeUpdate();
     }
 
-    public static void changePassword(String username, String newPassword) throws SQLException {
-        String query = "UPDATE account SET password = ? WHERE username = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, newPassword);
-        ps.setString(2, username);
-        ps.executeUpdate();
-    }
+
 
 
 

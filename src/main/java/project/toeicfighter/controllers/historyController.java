@@ -2,9 +2,11 @@ package project.toeicfighter.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import project.toeicfighter.cores.DatabaseManager;
@@ -23,6 +25,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class historyController implements Initializable {
+    public ScrollPane scrollPaneHistory;
     @FXML
     private ChoiceBox<Integer> recordCountBox = new ChoiceBox<>();
     @FXML
@@ -36,13 +39,23 @@ public class historyController implements Initializable {
     ArrayList<PracticeHistory> practiceHistories;
     ArrayList<Account> userList;
 
-    private void renderHistoryVBox(ArrayList<PracticeHistory> preparedHistoryList, int numberOfRecord) throws SQLException {
-
+    private void renderHistoryVBox(ArrayList<PracticeHistory> preparedHistoryList) throws SQLException {
         vBoxHistory.getChildren().clear();
+
+        if (preparedHistoryList.isEmpty()) {
+            Label noDataLabel = new Label("NO DATA");
+            noDataLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: red;");
+
+            // Căn giữa VBox
+            vBoxHistory.setAlignment(Pos.CENTER);
+            vBoxHistory.getChildren().add(noDataLabel);
+            return;
+        }
+
+        // Header như cũ
         HBox header = new HBox(20);
         header.setPrefWidth(720);
         header.getStyleClass().add("table-header");
-
         Label hNo = new Label("No.");           hNo.getStyleClass().addAll("label-no");
         Label hName = new Label("Full Name");  hName.getStyleClass().add("label-name");
         Label hStart = new Label("Start Time"); hStart.getStyleClass().add("label-starttime");
@@ -52,7 +65,6 @@ public class historyController implements Initializable {
         Label hScore = new Label("Score");      hScore.getStyleClass().add("label-score");
         header.getChildren().addAll(hNo,hName,hStart,hDuration,hQ,hCorrect,hScore);
         vBoxHistory.getChildren().add(header);
-
 
         int count = 1;
 
@@ -96,6 +108,7 @@ public class historyController implements Initializable {
             vBoxHistory.getChildren().add(row);
             count++;
         }
+
     }
 
     public void goButtonHandle() throws SQLException {
@@ -106,7 +119,7 @@ public class historyController implements Initializable {
         int count = 0;
         if (queryUser.equals("Everyone")) {
             preparedHistoryList = practiceHistories.stream().limit(numberOfRecord).collect(Collectors.toCollection(ArrayList::new));
-            renderHistoryVBox(preparedHistoryList, numberOfRecord);
+            renderHistoryVBox(preparedHistoryList);
         }
         else {
             Account user = userList.stream()
@@ -119,7 +132,7 @@ public class historyController implements Initializable {
                     if(count == numberOfRecord)
                         break;
                     preparedHistoryList.add(history);
-                    renderHistoryVBox(preparedHistoryList, numberOfRecord);
+                    renderHistoryVBox(preparedHistoryList);
                     count++;
                 }
             }

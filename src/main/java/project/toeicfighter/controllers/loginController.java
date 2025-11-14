@@ -31,6 +31,7 @@ public class loginController implements Initializable {
 
         if (matchedAccount != null) {
             SessionManager.setCurrentAccount(matchedAccount);
+            DatabaseManager.updateLoginStatus(SessionManager.getCurrentAccount().getUsername());
             optionController optionController = SceneManager.switchTo("optionScene");
             assert optionController != null;
         }
@@ -46,7 +47,6 @@ public class loginController implements Initializable {
             DatabaseManager.getConnection();
             accountArrayList = DatabaseManager.getAccountList();
             SessionManager.clearSession();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

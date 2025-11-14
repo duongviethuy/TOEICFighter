@@ -12,7 +12,6 @@ import project.toeicfighter.cores.SessionManager;
 import project.toeicfighter.models.Account;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -137,11 +136,14 @@ public class optionController implements Initializable {
 
     }
 
-
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public void accountCenterButtonHandle() {
+        SceneManager.switchTo("accountCenterScene");
     }
 
     @Override

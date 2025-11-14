@@ -47,8 +47,10 @@
       </Label>
       <ChoiceBox fx:id="findByUser" layoutX="400.0" layoutY="99.0" prefHeight="43.0" prefWidth="200.0" style="-fx-border-color: red; -fx-background-color: white; -fx-border-radius: 15px;" />
 
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" layoutX="24.0" layoutY="168.0" prefHeight="343.0" prefWidth="754.0">
-            <VBox fx:id="vBoxHistory" layoutX="40.0" layoutY="158.0" prefHeight="343.0" prefWidth="750.0" />
+        <ScrollPane fx:id="scrollPaneHistory" fitToWidth="true" hbarPolicy="NEVER" layoutX="24.0" layoutY="168.0" prefHeight="343.0" prefWidth="754.0">
+            <content>
+                <VBox fx:id="vBoxHistory" spacing="10" alignment="TOP_CENTER" />
+            </content>
         </ScrollPane>
     </children>
 </AnchorPane>

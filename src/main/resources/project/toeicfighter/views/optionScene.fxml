@@ -66,25 +66,26 @@
             <Font name="System Bold" size="26.0" />
          </font>
       </Label>
-      <HBox alignment="CENTER" layoutY="449.0" prefHeight="100.0" prefWidth="800.0" spacing="40.0">
-         <children>
-            <Button fx:id="accountCenterButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="170.0" text="Account Center">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
+        <HBox alignment="CENTER" layoutY="449.0" prefHeight="100.0" prefWidth="800.0" spacing="40.0">
+            <Button fx:id="accountCenterButton" mnemonicParsing="false" onAction="#accountCenterButtonHandle"
+                    prefHeight="50.0" prefWidth="170.0" text="Account Center">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
             </Button>
-            <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePasswordButtonHandle" prefHeight="50.0" prefWidth="170.0" text="Change password">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
+            <Button fx:id="changePasswordButton" mnemonicParsing="false" onAction="#changePasswordButtonHandle"
+                    prefHeight="50.0" prefWidth="170.0" text="Change password">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
             </Button>
-            <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logoutButtonHandle" prefHeight="50.0" prefWidth="170.0" text="Logout">
-               <font>
-                  <Font name="System Bold" size="16.0" />
-               </font>
+            <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logoutButtonHandle" prefHeight="50.0"
+                    prefWidth="170.0" text="Logout">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
             </Button>
-         </children>
-      </HBox>
+        </HBox>
       <Label fx:id="loginWithAdminRoleLabel" layoutX="25.0" layoutY="563.0" prefHeight="22.0" prefWidth="351.0" textFill="#000dff">
          <font>
             <Font name="System Italic" size="12.0" />

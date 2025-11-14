@@ -13,38 +13,41 @@
     -fx-padding: 5;
 }
 
-/* ======= Thanh chứa các tab ======= */
-.custom-tabpane .tab-header-area {
-    -fx-background-color: linear-gradient(to right, #ffffff, #f1f1f1);
-    -fx-border-color: #d0d0d0;
-    -fx-border-width: 0 0 1 0;
-}
-
-/* ======= Mỗi tab ======= */
-.custom-tabpane .tab {
-    -fx-background-color: transparent;
-    -fx-padding: 8 16;
-    -fx-font-size: 14px;
+/* HEADER */
+.account-header {
+    -fx-padding: 10 15;
+    -fx-background-color: #dfe6ee;
+    -fx-border-color: #c3c9cf;
+    -fx-border-width: 0 0 2 0;
     -fx-font-weight: bold;
-    -fx-text-fill: #555;
+    -fx-alignment: CENTER_LEFT;
 }
 
-/* ======= Tab đang được chọn ======= */
-.custom-tabpane .tab:selected {
-    -fx-background-color: #0078d7;    /* xanh nhấn giống Windows */
-    -fx-text-fill: white;
-    -fx-background-radius: 6 6 0 0;
-}
-
-/* ======= Nội dung trong tab ======= */
-.custom-tabpane .tab-content-area {
+/* ROW */
+.account-row {
+    -fx-padding: 8 15;
     -fx-background-color: #ffffff;
-    -fx-padding: 20;
-    -fx-border-color: #d0d0d0;
-    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-alignment: CENTER_LEFT;
 }
+.account-row:hover { -fx-background-color: #f5f7fa; }
 
-/* ======= Khi rê chuột vào tab ======= */
-.custom-tabpane .tab:hover {
-    -fx-background-color: #e7f0ff;
+/* CỘT */
+.col-id        { -fx-min-width: 60;  -fx-max-width: 60;  -fx-alignment: CENTER; }
+.col-username  { -fx-min-width: 100; -fx-max-width: 150; -fx-alignment: CENTER_LEFT; }
+.col-fullname  { -fx-min-width: 100; -fx-max-width: 200; -fx-alignment: CENTER_LEFT; }
+.col-role      { -fx-min-width: 80;  -fx-max-width: 80;  -fx-alignment: CENTER; }
+.col-created   { -fx-min-width: 150; -fx-max-width: 170; -fx-alignment: CENTER; }
+.col-login     { -fx-min-width: 150; -fx-max-width: 170; -fx-alignment: CENTER; }
+
+/* ACTION BUTTONS */
+.action-box { -fx-alignment: CENTER; }
+.btn-delete {
+    -fx-background-color: #d9534f; -fx-text-fill: white; -fx-padding: 4 10; -fx-background-radius: 4;
 }
+.btn-delete:hover { -fx-background-color: #c9302c; }
+.btn-reset {
+    -fx-background-color: #0275d8; -fx-text-fill: white; -fx-padding: 4 10; -fx-background-radius: 4;
+}
+.btn-reset:hover { -fx-background-color: #025aa5; }
