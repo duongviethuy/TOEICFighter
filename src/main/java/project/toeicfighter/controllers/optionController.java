@@ -26,14 +26,16 @@ public class optionController implements Initializable {
     public Button changePasswordButton;
     public Button logoutButton;
     public Label loginWithAdminRoleLabel;
-
     public Account account;
 
+
+    // NOTHING HERE, THIS CLASS ONLY HELP YOU SWITCH TO ANOTHER FUNCTION AFTER LOGGING IN
 
     public void setAccount(Account acc) {
         account = acc;
         setUsernameLabel();
         disableFunction();
+        account = SessionManager.getCurrentAccount();
     }
 
     void setUsernameLabel() {
@@ -71,9 +73,8 @@ public class optionController implements Initializable {
     }
 
     public void changePasswordButtonHandle() throws Exception {
-        boolean valid = false; // để kiểm tra mật khẩu cũ
+        boolean valid = false;
         while (!valid) {
-            // Tạo dialog
             Dialog<Pair<String, String>> dialog = new Dialog<>();
             dialog.setTitle("Change Password");
             dialog.setHeaderText("Enter your current and new password");
@@ -125,7 +126,6 @@ public class optionController implements Initializable {
                         SceneManager.returnLoginScene();
                     }
                 } else {
-                    // Nếu sai → thông báo lỗi và lặp lại
                     showAlert(Alert.AlertType.ERROR, "Incorrect current password! Try again.");
                 }
             }
@@ -133,9 +133,7 @@ public class optionController implements Initializable {
                 return;
             }
         }
-
     }
-
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setContentText(message);

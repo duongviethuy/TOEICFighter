@@ -27,15 +27,17 @@ public class loginController implements Initializable {
         var username = usernameField.getText();
         var password = passwordField.getText();
 
+        //hehe this logic, with a help of chatGPT, but trust me,
+        // I try to write and understand it myself several time :>>>
         Account matchedAccount = accountArrayList.stream().filter(account -> account.getUsername().equals(username) && account.getPassword().equals(password)).findFirst().orElse(null);
-
         if (matchedAccount != null) {
+            // After checking, we apply this account to class Session Manager to save user data;
             SessionManager.setCurrentAccount(matchedAccount);
+            // Don't forget to save the last time that account logging in;
             DatabaseManager.updateLoginStatus(SessionManager.getCurrentAccount().getUsername());
             optionController optionController = SceneManager.switchTo("optionScene");
             assert optionController != null;
         }
-
         else {
             loginCautionLabel.setText("Please try again");
         }

@@ -27,6 +27,8 @@ public class addQuestionController implements Initializable{
 
     Question newQuestion;
 
+    // in this function, it will check SPACE in each text, is all field are filled up ?
+    // in the future, I will develop it, ask ChatGPT or anything else :vv
     public void checkQuestionButtonHandle(){
         String content = questionContentField.getText();
         String answerA = answerAField.getText();
@@ -49,7 +51,6 @@ public class addQuestionController implements Initializable{
         DatabaseManager.addAQuestion(newQuestion);
         clearCurrent();
         addButton.setDisable(true);
-
     }
 
     public void goBackButtonHandle() throws SQLException {

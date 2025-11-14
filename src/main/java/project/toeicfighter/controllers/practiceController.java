@@ -31,37 +31,20 @@ public class practiceController implements Initializable {
     public static Button exitButton;
     @FXML
     private Button goPracticeButton;
-
     @FXML
     private Button finishButton;
-
     @FXML
     private TabPane questionPane;
-
     @FXML
     private ChoiceBox<Integer> questionCountBox = new ChoiceBox<>();
-
     @FXML
     private ProgressBar testScoreScale;
-
     @FXML
     private Label totalScoreLabel;
-
     LocalDateTime startTime;
 
-
-    public void exitButtonHandle() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận thoát");
-        alert.setHeaderText("Bạn có chắc chắn muốn thoát không?");
-        alert.setContentText("Nhấn OK để thoát, Cancel để hủy.");
-        if(alert.showAndWait().get() == ButtonType.OK) {
-            SceneManager.switchTo("optionScene");
-        }
-    }
-
+    // Disable these buttons to make sure nothing will be changed while practicing;
     public void goPracticeButtonHandle() throws SQLException {
-        // Disable these buttons to make sure nothing will be changed while practicing;
         questionCountBox.setDisable(true);
         goPracticeButton.setDisable(true);
         finishButton.setDisable(false);
@@ -69,6 +52,7 @@ public class practiceController implements Initializable {
         startTime = LocalDateTime.now();
     }
 
+    // Render a pane, and then practice in there
     public void PracticePaneRender() throws SQLException {
         int numberOfQuestion = questionCountBox.getValue();
         ArrayList<Question> questionList = DatabaseManager.getRandomQuestions(numberOfQuestion);
@@ -119,6 +103,8 @@ public class practiceController implements Initializable {
         }
     }
 
+    // After finishing the practice, user click finish, it will call this function
+    // below and save user's record to database
     public void finishButtonHandle() throws SQLException {
         int correctAnswerCount = 0;
         for(int i = 0; i < userAnswer.size(); i++) {
@@ -159,8 +145,14 @@ public class practiceController implements Initializable {
         long minutes = seconds / 60;
         long sec = seconds % 60;
 
-        totalScoreLabel.setText(progress * 100 + "% - " + correctAnswerCount + "/" +userAnswer.size() + " in " + minutes + "m " + sec + "s");
+        totalScoreLabel.setText(String.format("%.2f", progress * 100) + "% - " + correctAnswerCount + "/" + userAnswer.size() + " in " + minutes + "m " + sec + "s");
+
+        // save to database
         DatabaseManager.saveToHistory(SessionManager.getCurrentAccount().getAccountID(), userAnswer.size(), correctAnswerCount, startTime,endTime);
+    }
+
+    public void exitButtonHandle() {
+        SceneManager.switchTo("optionScene");
     }
 
     @Override

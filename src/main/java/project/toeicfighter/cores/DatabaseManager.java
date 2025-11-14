@@ -9,31 +9,34 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class DatabaseManager {
+
+    // ===== MYSQL ACCOUNT =====
     private static final String dbURL = "jdbc:mysql://localhost:3306/toeic_fighter";
     private static final String dbUSER = "root";
     private static final String dbPASSWORD = "12102001";
-
     private static Connection connection;
 
+    // ===== FUNCTION TO CONNECT TO DATABASE =====
     public static void getConnection() throws SQLException {
         if(connection == null || connection.isClosed()) {
             System.out.println("Successfully connected to database");
             connection = DriverManager.getConnection(dbURL, dbUSER, dbPASSWORD);
         }
     }
-
     public static void closeConnection() throws SQLException {
         connection.close();
     }
 
-    //NOTE: Hàm để lấy tất cả tài khoản đã được lưu trong database
+    // ===== ACCOUNT RELATED FUNCTION =====
+
+    //NOTE: GET all account in database
     public static ArrayList<Account> getAccountList() throws SQLException {
         ArrayList<Account> accountsList = new ArrayList<>();
-
         String allAccountQuery = "SELECT * FROM account";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(allAccountQuery);
 
+        //NOTE: If having no account in database, create a default Admin account
         if (!resultSet.isBeforeFirst()) {
             // NOTE: If no account exists in the database, create a default one.
             String insertDefaultAccount = "INSERT INTO account (accountID, username, password, fullname, role) VALUES " +
@@ -42,7 +45,6 @@ public class DatabaseManager {
             accountsList.add(new Account("admin001", "admin", "123", "Default","Teacher"));
             return accountsList;
         }
-
         while (resultSet.next()) {
             String accountID = resultSet.getString("accountID");
             String username = resultSet.getString("username");
@@ -59,10 +61,21 @@ public class DatabaseManager {
             }
             accountsList.add(new Account(accountID, username, password, fullname, role, createDate, lastLogin));
         }
-
         return accountsList;
     }
-
+    //NOTE: GET an account with its ID
+    public static String getFullNameByUserID(String userID) throws SQLException {
+        String fullname;
+        String query = "SELECT fullname FROM account where accountID = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, userID);
+        ResultSet resultSet = ps.executeQuery();
+        if(resultSet.next()) {
+            fullname = resultSet.getString("fullname");
+            return fullname;
+        }
+        else return "null";
+    }
     public static void changePassword(String username, String newPassword) throws SQLException {
         String query = "UPDATE account SET password = ? WHERE username = ?";
         PreparedStatement ps = connection.prepareStatement(query);
@@ -70,7 +83,6 @@ public class DatabaseManager {
         ps.setString(2, username);
         ps.executeUpdate();
     }
-
     public static void updateLoginStatus(String username) throws SQLException {
         String  query = "UPDATE account SET lastLogin = ? WHERE username = ?";
         PreparedStatement ps = connection.prepareStatement(query);
@@ -78,7 +90,6 @@ public class DatabaseManager {
         ps.setString(2, username);
         ps.executeUpdate();
     }
-
     public static void createAccount(Account account) throws SQLException {
         String query = "INSERT INTO account (username, password, fullname, role, createDate) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(query);
@@ -88,8 +99,14 @@ public class DatabaseManager {
         ps.setString(4, account.getRole());
         ps.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
         ps.executeUpdate();
-    }
 
+        // Because of userID is an auto-generated string, you must add this trigger to MySQL before run;
+        /* CREATE DEFINER=`root`@`localhost` TRIGGER `account_BEFORE_INSERT` BEFORE INSERT ON `account` FOR EACH ROW BEGIN
+        IF NEW.accountID IS NULL OR NEW.accountID = '' THEN
+        SET NEW.accountID = SUBSTRING(MD5(RAND()), 1, 5);
+        END IF;
+        END */
+    }
     public static void deleteAccount(String accountID) throws SQLException {
         String query = "DELETE FROM account WHERE accountID = ?";
         PreparedStatement ps = connection.prepareStatement(query);
@@ -97,14 +114,14 @@ public class DatabaseManager {
         ps.executeUpdate();
     }
 
-    // hàm để lấy tất cả câu hỏi trong database và trả lại 1 ArrayList
+    // ===== QUESTIONS RELATED FUNCTION =====
+
+    // GET all Question in database and then return an arraylist
     public static ArrayList<Question> getAllQuestion() throws SQLException {
         ArrayList<Question> questionList = new ArrayList<>();
-
         String allQuestionQuery = "SELECT * FROM question";
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(allQuestionQuery);
-
         while (resultSet.next()) {
             int id = resultSet.getInt("questionID");
             String question = resultSet.getString("Content");
@@ -120,17 +137,13 @@ public class DatabaseManager {
         return  questionList;
     }
 
-    // hàm để lấy ngẫu nhiên n câu hỏi từ database
+    // RANDOM n question from database
     public static ArrayList<Question> getRandomQuestions(int numberOfQuestion) throws SQLException {
         ArrayList<Question> questionList = new ArrayList<>();
-
-        // SQL lấy ngẫu nhiên numberOfQuestion câu hỏi
         String randomQuestionQuery = "SELECT * FROM question ORDER BY RAND() LIMIT ?";
         PreparedStatement preparedStatement = connection.prepareStatement(randomQuestionQuery);
-        preparedStatement.setInt(1, numberOfQuestion); // gán số lượng câu hỏi
-
+        preparedStatement.setInt(1, numberOfQuestion);
         ResultSet resultSet = preparedStatement.executeQuery();
-
         while (resultSet.next()) {
             int id = resultSet.getInt("questionID");
             String question = resultSet.getString("Content");
@@ -144,47 +157,6 @@ public class DatabaseManager {
             questionList.add(new Question(id, question, answerA, answerB, answerC, answerD, correctAnswer, hint, addbyID));
         }
         return questionList;
-    }
-
-    public static void saveToHistory(String userID, int numberOfQuestion, int numberOfCorrectQuestion, LocalDateTime start_time, LocalDateTime end_time) throws SQLException {
-        String query = "INSERT INTO practice_history (userID, numberOfQuestion, numberOfCorrectQuestion, start_time, end_time) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, userID);
-        ps.setInt(2, numberOfQuestion);
-        ps.setInt(3, numberOfCorrectQuestion);
-        ps.setTimestamp(4, Timestamp.valueOf(start_time));
-        ps.setTimestamp(5, Timestamp.valueOf(end_time));
-        ps.executeUpdate();
-    }
-
-    public static ArrayList<PracticeHistory> getPracticeHistory() throws SQLException {
-        ArrayList<PracticeHistory> practiceHistory = new ArrayList<>();
-        String query = "SELECT * from practice_history";
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery(query);
-        while (rs.next()) {
-            int testID = rs.getInt("test_history_id");
-            String userID = rs.getString("userID");
-            int numberOfQuestion = rs.getInt("numberOfQuestion");
-            int numberOfCorrectQuestion = rs.getInt("numberOfCorrectQuestion");
-            LocalDateTime start_time = rs.getTimestamp("start_time").toLocalDateTime();
-            LocalDateTime end_time = rs.getTimestamp("end_time").toLocalDateTime();
-            practiceHistory.add(new PracticeHistory(testID, userID, numberOfQuestion, numberOfCorrectQuestion, start_time, end_time));
-        }
-        return practiceHistory;
-    }
-
-    public static String getFullNameByUserID(String userID) throws SQLException {
-        String fullname;
-        String query = "SELECT fullname FROM account where accountID = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setString(1, userID);
-        ResultSet resultSet = ps.executeQuery();
-        if(resultSet.next()) {
-            fullname = resultSet.getString("fullname");
-            return fullname;
-        }
-        else return "null";
     }
 
     public static void addAQuestion(Question question) throws SQLException {
@@ -210,7 +182,6 @@ public class DatabaseManager {
 
     public static void updateAQuestion(int questionID, Question question) throws SQLException {
         String query = "UPDATE question SET Content = ?, answerA = ?, answerB = ?, answerC = ?, answerD = ?, correctAnswer = ?, hint = ?, addByID = ? WHERE questionID = ?";
-
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, question.getQuestion());
         ps.setString(2, question.getAnswerA());
@@ -220,12 +191,36 @@ public class DatabaseManager {
         ps.setString(6, question.getCorrectAnswer());
         ps.setString(7, question.getHint());
         ps.setString(8, question.getAddbyID());
-        ps.setInt(9, questionID); // Gán id của câu hỏi cần cập nhật
+        ps.setInt(9, questionID);
         ps.executeUpdate();
     }
 
-
-
-
-
+    // ===== PRACTICE HISTORY FUNCTION =====
+    // AFTER FINISH A TEST, SAVE IT TO DATABASE;
+    public static void saveToHistory(String userID, int numberOfQuestion, int numberOfCorrectQuestion, LocalDateTime start_time, LocalDateTime end_time) throws SQLException {
+        String query = "INSERT INTO practice_history (userID, numberOfQuestion, numberOfCorrectQuestion, start_time, end_time) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, userID);
+        ps.setInt(2, numberOfQuestion);
+        ps.setInt(3, numberOfCorrectQuestion);
+        ps.setTimestamp(4, Timestamp.valueOf(start_time));
+        ps.setTimestamp(5, Timestamp.valueOf(end_time));
+        ps.executeUpdate();
+    }
+    public static ArrayList<PracticeHistory> getPracticeHistory() throws SQLException {
+        ArrayList<PracticeHistory> practiceHistory = new ArrayList<>();
+        String query = "SELECT * from practice_history";
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery(query);
+        while (rs.next()) {
+            int testID = rs.getInt("test_history_id");
+            String userID = rs.getString("userID");
+            int numberOfQuestion = rs.getInt("numberOfQuestion");
+            int numberOfCorrectQuestion = rs.getInt("numberOfCorrectQuestion");
+            LocalDateTime start_time = rs.getTimestamp("start_time").toLocalDateTime();
+            LocalDateTime end_time = rs.getTimestamp("end_time").toLocalDateTime();
+            practiceHistory.add(new PracticeHistory(testID, userID, numberOfQuestion, numberOfCorrectQuestion, start_time, end_time));
+        }
+        return practiceHistory;
+    }
 }

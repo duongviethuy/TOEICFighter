@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -42,17 +41,15 @@ public class historyController implements Initializable {
     private void renderHistoryVBox(ArrayList<PracticeHistory> preparedHistoryList) throws SQLException {
         vBoxHistory.getChildren().clear();
 
+        // if user didn't do any test before, render "NO DATA"
         if (preparedHistoryList.isEmpty()) {
             Label noDataLabel = new Label("NO DATA");
             noDataLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: red;");
-
-            // Căn giữa VBox
             vBoxHistory.setAlignment(Pos.CENTER);
             vBoxHistory.getChildren().add(noDataLabel);
             return;
         }
 
-        // Header như cũ
         HBox header = new HBox(20);
         header.setPrefWidth(720);
         header.getStyleClass().add("table-header");
@@ -65,18 +62,20 @@ public class historyController implements Initializable {
         Label hScore = new Label("Score");      hScore.getStyleClass().add("label-score");
         header.getChildren().addAll(hNo,hName,hStart,hDuration,hQ,hCorrect,hScore);
         vBoxHistory.getChildren().add(header);
-
         int count = 1;
 
         for (PracticeHistory history : preparedHistoryList) {
-            HBox row = new HBox(20); // spacing giữa các label
-            row.setPrefWidth(720);   // cố định chiều ngang
+            HBox row = new HBox(20);
+            row.setPrefWidth(720);
             row.getStyleClass().add("table-label");
 
             Label labelNo = new Label(String.valueOf(count));
             labelNo.getStyleClass().add("label-no");
 
             Label labelName = new Label(DatabaseManager.getFullNameByUserID(history.getUserID()));
+            if(labelName.getText().equals("null")) {
+                labelName.setText("Deleted account");
+            }
             labelName.getStyleClass().add("label-name");
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -111,31 +110,39 @@ public class historyController implements Initializable {
 
     }
 
+    // this function collect data from 2 data box, 1 is number of record, 2 is FULLNAME<-;
+    // it should be complex cause of class PracticeHistory only have userID
+    // we have to find user's full name in database;
     public void goButtonHandle() throws SQLException {
         vBoxHistory.setVisible(true);
         ArrayList<PracticeHistory> preparedHistoryList = new ArrayList<>();
         String queryUser = findByUser.getValue().trim();
         int numberOfRecord = recordCountBox.getValue();
         int count = 0;
+        //hehe. if "everyone" we don't need to query anything related full name of user;
         if (queryUser.equals("Everyone")) {
             preparedHistoryList = practiceHistories.stream().limit(numberOfRecord).collect(Collectors.toCollection(ArrayList::new));
             renderHistoryVBox(preparedHistoryList);
         }
+        //on the other hand, :<<<
         else {
+            // check data in userList, then return user's full name
             Account user = userList.stream()
                     .filter(a -> a.getFullname().equals(queryUser))
                     .findFirst()
                     .orElse(null);
+
+            //  check data in history list
             for(PracticeHistory history : practiceHistories) {
                 assert user != null;
                 if(history.getUserID().equals(user.getAccountID())) {
                     if(count == numberOfRecord)
                         break;
                     preparedHistoryList.add(history);
-                    renderHistoryVBox(preparedHistoryList);
                     count++;
                 }
             }
+            renderHistoryVBox(preparedHistoryList);
         }
     }
 

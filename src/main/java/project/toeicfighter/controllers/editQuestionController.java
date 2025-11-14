@@ -78,7 +78,6 @@ public class editQuestionController implements Initializable {
         alert.setTitle("Delete Confirmation");
         alert.setHeaderText("Are you sure you want to delete this question?");
         alert.setContentText("This action cannot be undone.");
-        // Hiển thị Alert và chờ người dùng chọn
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
     }

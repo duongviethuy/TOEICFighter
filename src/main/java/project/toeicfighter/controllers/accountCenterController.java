@@ -9,7 +9,6 @@ import javafx.scene.layout.VBox;
 import project.toeicfighter.cores.DatabaseManager;
 import project.toeicfighter.cores.SceneManager;
 import project.toeicfighter.models.Account;
-
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -21,33 +20,30 @@ public class accountCenterController implements Initializable {
 
     @FXML
     private VBox accountContainer;
-
     @FXML
-    private ScrollPane accountPane; // không khởi tạo ở đây
-
-    private ArrayList<Account> accountList;
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
+    private ScrollPane accountPane;
     public Label noticeLabel;
-
     @FXML
     private ChoiceBox<String> roleChoiceBox = new ChoiceBox<>();
-
     @FXML
     private TextField usernameField, fullnameField;
-
     @FXML
     private PasswordField passwordField;
 
+    private ArrayList<Account> accountList;
+
+    // ===== Function below will render an account list an 2 button helping reset password or delete account =====
     public void accountPaneRender() throws SQLException {
+        //clear previous list and make sure new list will not contain old element;
         accountContainer.getChildren().clear();
+
+        // call SQL again to update data in arraylist
         accountList = DatabaseManager.getAccountList();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        // ===== 1. HEADER =====
+        //Render Header
         HBox header = new HBox(20);
         header.getStyleClass().add("account-header");
-
         Label hID = new Label("ID");          hID.getStyleClass().add("col-id");
         Label hUser = new Label("Username");  hUser.getStyleClass().add("col-username");
         Label hFullname = new Label("Full Name"); hFullname.getStyleClass().add("col-fullname");
@@ -55,30 +51,25 @@ public class accountCenterController implements Initializable {
         Label hCreate = new Label("Created"); hCreate.getStyleClass().add("col-created");
         Label hLogin = new Label("Last Login"); hLogin.getStyleClass().add("col-login");
         Label hAction = new Label("Actions"); hAction.setMinWidth(130); hAction.setAlignment(Pos.CENTER);
-
         header.getChildren().addAll(hID, hUser, hFullname, hRole, hCreate, hLogin, hAction);
         accountContainer.getChildren().add(header);
 
-        // ===== 2. ROWS =====
+        // render account list, in this case, we must add class to each element helping easier for CSS;
         for (Account acc : accountList) {
-
             HBox row = new HBox(20);
             row.getStyleClass().add("account-row");
-
             Label colID = new Label(acc.getAccountID()); colID.getStyleClass().add("col-id");
             Label colUsername = new Label(acc.getUsername()); colUsername.getStyleClass().add("col-username");
             Label colFullname = new Label(acc.getFullname()); colFullname.getStyleClass().add("col-fullname");
             Label colRole = new Label(acc.getRole()); colRole.getStyleClass().add("col-role");
-
             Label colCreateDate = new Label(acc.getCreateDate() != null
                     ? acc.getCreateDate().format(formatter) : "N/A");
             colCreateDate.getStyleClass().add("col-created");
-
             Label colLastLogin = new Label(acc.getLastLogin() != null
                     ? acc.getLastLogin().format(formatter) : "No Login");
             colLastLogin.getStyleClass().add("col-login");
 
-            // ===== 3. ACTION BUTTONS =====
+            // two action button
             Button btnDelete = new Button("Delete");
             btnDelete.getStyleClass().add("btn-delete");
             btnDelete.setOnAction(e -> {
@@ -98,6 +89,8 @@ public class accountCenterController implements Initializable {
                     throw new RuntimeException(ex);
                 }
             });
+
+            // with admin role, reset or delete button must be disabled
             if(acc.getRole().equals("Admin")) {
                 btnDelete.setDisable(true);
                 btnReset.setDisable(true);
@@ -118,11 +111,10 @@ public class accountCenterController implements Initializable {
         accountPane.setContent(accountContainer);
     }
 
-
+    // delete and reset password function
     private void handleDeleteAccount(Account acc) throws SQLException {
         boolean confirmed = showConfirmation("Delete", acc.getUsername());
         if (confirmed) {
-            System.out.println("Deleting account: " + acc.getUsername());
             DatabaseManager.deleteAccount(acc.getAccountID());
             accountPaneRender();
         }
@@ -133,9 +125,9 @@ public class accountCenterController implements Initializable {
         if (confirmed) {
             DatabaseManager.changePassword(acc.getUsername(), "123");
         }
-
     }
 
+    //alert: confirmation
     public boolean showConfirmation(String action, String username) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(action + " Confirmation");
@@ -147,6 +139,7 @@ public class accountCenterController implements Initializable {
         return result.isPresent() && result.get() == ButtonType.OK;
     }
 
+    // function create account
     public void createAccountButtonHandle() throws SQLException {
         String newUsername = usernameField.getText();
         boolean checkUsername = accountList.stream().anyMatch(account -> account.getUsername().equals(newUsername));
@@ -169,22 +162,17 @@ public class accountCenterController implements Initializable {
             }
         }
     }
-
-
     public void goBackButtonHandle() throws SQLException {
         SceneManager.switchTo("optionScene");
     }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         roleChoiceBox.getItems().addAll("Student", "Teacher", "Admin");
         roleChoiceBox.setValue("Student");
-
         try {
             accountPaneRender();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

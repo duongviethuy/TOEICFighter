@@ -3,6 +3,8 @@ package project.toeicfighter.cores;
 import project.toeicfighter.models.Account;
 import project.toeicfighter.models.Question;
 
+// ===== SESSION MANAGER =====
+// Easily, this class with save your account data and use globally in this program;
 public class SessionManager {
     private static Account currentAccount;
     private static Question HandlingQuestion;
