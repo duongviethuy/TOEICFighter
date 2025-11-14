@@ -4,6 +4,8 @@ import project.toeicfighter.models.Account;
 import project.toeicfighter.models.PracticeHistory;
 import project.toeicfighter.models.Question;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,17 +20,77 @@ public class DatabaseManager {
 
     // ===== FUNCTION TO CONNECT TO DATABASE =====
     public static void getConnection() throws SQLException {
-        if(connection == null || connection.isClosed()) {
-            System.out.println("Successfully connected to database");
+        if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(dbURL, dbUSER, dbPASSWORD);
+            System.out.println("Successfully connected to database");
+            // IF HAVING NO DATABASE ON YOUR DEVICE, DON'T WORRY, THE FUNCTION BELOW WILL HELP YOU
+            // SOME SAMPLE DATA
+            if (isDatabaseEmpty()) {
+                importData();
+            }
         }
     }
+
     public static void closeConnection() throws SQLException {
-        connection.close();
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
+
+    // ===== CHECK DATABASE EMPTY =====
+    private static boolean isDatabaseEmpty() {
+        try {
+            DatabaseMetaData meta = connection.getMetaData();
+            ResultSet tables = meta.getTables(null, null, "%", new String[]{"TABLE"});
+            // IF HAVING NO TABLE, IT MEAN YOU DATABASE IS EMPTY;
+            if (!tables.next()) {
+                System.out.println("Database is empty. Importing data...");
+                return true;
+            }
+            // ELSE, CHECK any data exist in database?;
+            tables.beforeFirst();
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                String countSQL = "SELECT COUNT(*) FROM " + tableName;
+                try (Statement st = connection.createStatement();
+                     ResultSet rs = st.executeQuery(countSQL)) {
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        return false; // IT MEANS HAVING DATA, RETURN
+                    }
+                } catch (SQLException ignore) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            System.out.println("Check database failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // IMPORT DATA
+    private static void importData() {
+        try {
+            InputStream in = DatabaseManager.class.getResourceAsStream("/demodata/data.sql");
+            if (in == null) {
+                System.out.println("File data.sql can not be found!");
+                return;
+            }
+            String sql = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            Statement st = connection.createStatement();
+            for (String s : sql.split(";")) {
+                if (!s.trim().isEmpty()) {
+                    st.execute(s + ";");
+                }
+            }
+            System.out.println("Data imported successfully!");
+
+        } catch (Exception e) {
+            System.out.println("Import data failed: " + e.getMessage());
+        }
     }
 
     // ===== ACCOUNT RELATED FUNCTION =====
-
     //NOTE: GET all account in database
     public static ArrayList<Account> getAccountList() throws SQLException {
         ArrayList<Account> accountsList = new ArrayList<>();
