@@ -22,7 +22,7 @@
                 <Image url="@../media/images/logoTOEIC.png" />
             </image>
         </ImageView>
-        <Label alignment="CENTER" depthTest="DISABLE" layoutX="530.0" layoutY="563.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="22.0" prefWidth="270.0" text="A project of Viet Huy - February 2026" textAlignment="CENTER">
+        <Label alignment="CENTER" depthTest="DISABLE" layoutX="530.0" layoutY="563.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="22.0" prefWidth="270.0" text="A project of Viet Huy" textAlignment="CENTER">
             <font>
                 <Font size="13.0" />
             </font>
